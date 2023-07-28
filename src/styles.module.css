@@ -1,0 +1,41 @@
+
+.input {
+  font-size: 1rem;
+
+  border-radius: 5px;
+  border: 2px solid rgb(41, 41, 41);
+
+  background-color: rgb(22, 22, 22);
+  color: white;
+
+  padding: 5px; 
+  box-sizing: border-box;
+  width: 100% 
+}
+
+.dropdown {
+  width: 100%;
+  border: solid;
+  border-color: white;
+  border-width: 1px;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: rgb(17, 17, 17);
+  box-sizing: border-box;
+
+}
+
+.dropdownItem {
+  height: 20px;
+  background-color: rgb(17, 17, 17);
+  color: white;
+  padding-left: 8px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-radius: 8px;
+}
+
+.dropdownItem:hover {
+  background-color: rgb(41, 41, 41);
+}
+

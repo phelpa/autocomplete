@@ -2,7 +2,6 @@
 // @ts-nocheck
 /* eslint-disable */
 
-
 //instead of using lodash's debounce we use this function that does the same thing
 //https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_debounce
 
