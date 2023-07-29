@@ -7,13 +7,25 @@ type Suggestion = {
   name: string;
 }
 
+const getHighlightedText = (text: string, highlight: string) => {
+  // Split text on highlight term, include term itself into parts, ignore case
+  const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+  return <span>{parts.map((part, i) => part.toLowerCase() === highlight.toLowerCase() ? <span key={i} style={{ color: 'yellow' }}>{part}</span> : part)}</span>;
+}
+
+const DEBOUNCE_DELAY_IN_MS = 200;
+
 export default function App() {
+  const [inputValue, setInputValue] = React.useState('')
   const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);
+  const [loading, setLoading] = React.useState(false)
   const abortController = React.useRef(new AbortController());
 
   const apiCall = async (value: string) => {
     if (!value) {
       setSuggestions([]);
+      setLoading(false)
+      abortController.current.abort();
       return;
     }
 
@@ -22,6 +34,7 @@ export default function App() {
     const controller = new AbortController(); //use new abortController for new request
     abortController.current = controller;
 
+    setLoading(true)
     try {
       const response = await fetch(`https://swapi.dev/api/people/?search=${encodeURIComponent(value)}`, {
         signal: controller.signal
@@ -29,32 +42,43 @@ export default function App() {
       const data = await response.json();
       const suggestions = data.results;
       setSuggestions(suggestions);
+      setLoading(false)
 
     } catch (error) {
       console.error("Error fetching data:", (error as Error).message);
     }
   };
 
-  const debouncedApiCall = debounce(apiCall, 200);
+  const debouncedApiCall = React.useRef(debounce(apiCall, DEBOUNCE_DELAY_IN_MS));
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    debouncedApiCall(e.target.value);
+    setInputValue(e.target.value)
+    debouncedApiCall.current(e.target.value);
   };
 
+  const onSuggestionClick = (name: string) => () => {
+    setInputValue(name)
+    setSuggestions([])
+  }
+
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: '320px' }}>
-        <h2>Type a Starwar Character</h2>
+    <div className={styles.container}>
+      <div className={styles.autocomplete}>
+        <h2>Type a Star Wars Character</h2>
 
-        <div>
-          <input className={styles.input} onChange={onChange} />
+        <input className={styles.input} onChange={onChange} value={inputValue} />
 
-          {!!suggestions.length && <div className={styles.dropdown}>
-            {suggestions?.map((item) => (
-              <div className={styles.dropdownItem} key={item.name}>{item.name}</div>
-            ))}
+        {loading &&
+          <div className={styles.dropdown}>
+            <div className={styles.dropdownItem}>Loading...</div>
           </div>}
-        </div>
+
+        {!!suggestions.length && !loading && <div className={styles.dropdown}>
+          {suggestions?.map(({ name }) => (
+            <div onClick={onSuggestionClick(name)} className={styles.dropdownItem} key={name}>{getHighlightedText(name, inputValue)}</div>
+          ))}
+        </div>}
+
       </div>
     </div>
   );
