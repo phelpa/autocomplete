@@ -19,12 +19,15 @@ export default function App() {
   const [inputValue, setInputValue] = React.useState('')
   const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);
   const [loading, setLoading] = React.useState(false)
+  const [noSuggestionsFound, setNoSuggestionsFound] = React.useState(false)
+
   const abortController = React.useRef(new AbortController());
 
   const apiCall = async (value: string) => {
     if (!value) {
       setSuggestions([]);
       setLoading(false)
+      setNoSuggestionsFound(false)
       abortController.current.abort();
       return;
     }
@@ -41,6 +44,8 @@ export default function App() {
       });
       const data = await response.json();
       const suggestions = data.results;
+
+      setNoSuggestionsFound(!suggestions.length)
       setSuggestions(suggestions);
       setLoading(false)
 
@@ -71,6 +76,11 @@ export default function App() {
         {loading &&
           <div className={styles.dropdown}>
             <div className={styles.dropdownItem}>Loading...</div>
+          </div>}
+
+        {noSuggestionsFound && !loading &&
+          <div className={`${styles.dropdown} ${styles.noSuggestionDropDown}`}>
+            <div className={styles.noSuggestionItem} style={{ opacity: 0.5 }}>No suggestions found</div>
           </div>}
 
         {!!suggestions.length && !loading && <div className={styles.dropdown}>

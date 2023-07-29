@@ -15,11 +15,11 @@
   color: white;
   padding: 5px; 
   box-sizing: border-box;
-  width: 100% 
+  width: 100%;
+  position: relative;
 }
 
 .dropdown {
-  width: 100%;
   border: solid;
   border-color: white;
   border-width: 1px;
@@ -27,10 +27,15 @@
   cursor: pointer;
   background-color: rgb(17, 17, 17);
   box-sizing: border-box;
-
+  width: 320px;
+  position: absolute;
 }
 
-.dropdownItem {
+.noSuggestionDropDown {
+  cursor: unset;
+}
+
+.dropdownItem, .noSuggestionItem {
   height: 20px;
   background-color: rgb(17, 17, 17);
   color: white;
